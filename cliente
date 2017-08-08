@@ -12,19 +12,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Properties;
 
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,7 +24,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import javax.swing.JTextArea;
-import javax.swing.JScrollBar;
 
 public class cliente  extends JDialog {
 	String serverAddres="";
@@ -155,7 +144,8 @@ public class cliente  extends JDialog {
 		while (true) {
 			String line = in.readLine();//lee los datos enviados de servidor
 			if (line.startsWith("Error")) {//si hay palabras restringuidas es denegado 
-				JOptionPane.showMessageDialog(null, line +"\n");
+				JOptionPane.showMessageDialog(null, line );
+				btnEnviarCorreo.setEnabled(true);
 			} else if (line.startsWith("correcto")) {//s ino hay palabras restringuidas es aceptado 
 				JOptionPane.showMessageDialog(null, line);
 				btnEnviarCorreo.setEnabled(true);
