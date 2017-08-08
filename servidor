@@ -26,7 +26,7 @@ public class servidor {
 	public static int i=0;
 	public static String datos[] =new String [5];
 	static String control=" ";
-	static String virus=" ";
+	static String virus="";
 	static String b="";	
 	private static final int PORT = 9000;
 
@@ -88,7 +88,7 @@ public class servidor {
 			// Creo la parte del mensaje
 			MimeBodyPart mimeBodyPart = new MimeBodyPart();
 			mimeBodyPart.setText(datos[4]);
-			
+
 
 
 
@@ -159,14 +159,8 @@ public class servidor {
 
 			// Creo la parte del mensaje
 			MimeBodyPart mimeBodyPart = new MimeBodyPart();
-			if(b!=null){
-				mimeBodyPart.setText(b+" Son malas palabras envie algo bonito");
-			} if(virus!=null){
-				mimeBodyPart.setText("Su mensaje fue considerado virus"+ virus +" \n Y no se pudo enviar");
-				
-			} if(b!=null&& virus!=null){
-				mimeBodyPart.setText(" Su mensaje fue considerado virus "+virus +" Y contienen malas palabras"+b);	
-			}
+			mimeBodyPart.setText(datos[4]);
+			
 
 
 			// Crear el multipart para agregar la parte del mensaje anterior
@@ -193,7 +187,10 @@ public class servidor {
 		if (aviso==0) {
 			control="¡Correo electrónico enviado exitosamente!";
 		}
+		
 	}
+
+		
 	private static class Handler extends Thread {// extends Thread para  redefinir el método run
 		private Socket socket;//establecimiento de la conexión de red y del envío de datos a través de ella.
 		private BufferedReader in;// Para leer del teclado con el método readLine()
@@ -211,10 +208,9 @@ public class servidor {
 
 		public void run() {	
 			String mensajeServidor;
-				
+			i=0;
 			StringTokenizer tokens;
 			StringTokenizer tokens1;
-
 			try {
 
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream())); //lee el socket ingresado.
@@ -222,13 +218,11 @@ public class servidor {
 
 				while (true) {
 					mensajeServidor = in.readLine();//lee los datos de cliente
-					System.out.println(mensajeServidor);
 					if (mensajeServidor == null) {//si es vacio
 						return;//regresa
 					}else {
 
-						tokens=new StringTokenizer(mensajeServidor,"¬");//divide al string en tokens cada que encuentra espacio
-						int nDatos=tokens.countTokens();//cuenta cuantos tokens
+						tokens=new StringTokenizer(mensajeServidor,"¬");//divide al string en tokens cada que encuentra este simbolo ¬
 						while(tokens.hasMoreTokens()){
 							String str=tokens.nextToken();//los tokens son almacenados en str
 							datos[i]=str;
@@ -239,28 +233,35 @@ public class servidor {
 							String str1=tokens1.nextToken();
 							if(str1.toUpperCase().equals("PAMELA")||str1.toUpperCase().equals("HOLA")||str1.toUpperCase().equals("COMO")||str1.toUpperCase().equals("MUNDO")){//si hay estas palabras
 								b+= str1 +", ";//envia a cliente el error
-							} if(str1.equals("#$@!")){
-								virus+=str1 +", ";
-								
+							}if(str1.equals("#$@!")){
+								virus+=str1;	
 							}
-							 if(b==null&& virus==null){
-									mandarCorreo();
-									out.println("correcto "+ control);
-								}
 							
-							}								
+						}
+						if(b=="" && virus==""){
+							mandarCorreo();
+							out.println("correcto "+ control);
+							
+						}
 						System.out.print(b);
-						 if(b!=null){
+						if(b!="" && virus==""){
+							datos[4]= b +" Son malas palabras envie algo bonito";
 							mandarCorreoError();
 							out.println("Error "+ b +" Son malas palabras envie algo bonito");
-						}if(virus!=null){
+							
+						}
+						if(b=="" && virus!=""){
+							datos[4]= virus +" Este  mensaje se considera  virus y no se envio";
 							mandarCorreoError();
 							out.println("Error "+ virus +" Su mensaje tiene virus");
-						//envia a cliente el error 
-						} if((b!=null)&& (virus!=null)){
-							mandarCorreoError();
-							out.println("Error "+ virus +" Su mensaje tiene virus y "+ b+" Son malas palabras");	
+							//envia a cliente el error 
 						}
+						if(b!="" && virus!=""){
+							datos[4]=" Su mensaje fue considerado virus "+virus +" Y contienen malas palabras "+b;
+							mandarCorreoError();
+							out.println("Error "+ virus +" Su mensaje tiene virus y "+ b+" Son malas palabras");
+						}
+
 					}
 				}
 			}catch (IOException e) {//en caso de error
